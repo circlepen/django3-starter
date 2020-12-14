@@ -1,0 +1,48 @@
+version: "3"
+services:
+  db:
+    image: mysql:latest
+    command: mysqld --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./mysql:/var/lib/mysql
+    container_name: mysqlDB
+    privileged: true
+    ports:
+      - 3306:3306
+    env_file:
+      - ./.env
+    restart: on-failure:3
+  nginx:
+    container_name: nginx-container
+    build: ./nginxconf
+    restart: always
+    ports:
+      # - "8080:80"
+      - "80:80"
+    volumes:
+      - .:/code
+      - ./my_project:/code/my_project
+      - ./log:/var/log/nginx
+    depends_on:
+      - app
+  app:
+    restart: always
+    build: ./my_project
+    # command: bash -c "cd my_project && python3 manage.py crontab add && python3 manage.py makemigrations && python3 manage.py migrate &&  python3 manage.py runserver 0.0.0.0:80"
+    command:
+      - /bin/sh
+      - -c
+      - |
+        python3 manage.py collectstatic --noinput
+        django-admin compilemessages
+        python3 manage.py makemigrations
+        python3 manage.py migrate
+        uwsgi --ini /code/my_project/uwsgi_conf.ini
+    container_name: web
+    volumes:
+      - .:/code
+      - ./my_project:/code/my_project
+    # ports:
+    #   - 80:80
+    depends_on:
+      - db

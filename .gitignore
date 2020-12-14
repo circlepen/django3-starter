@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# mysql
+mysql/
+
+# prod_static
+my_project/prod_static/
