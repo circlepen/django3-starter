@@ -2,6 +2,7 @@
 a project starter for django, using nginx as proxy,
 uwsgi as wsgi server and mysql as database,
 all the components work as container on docker
+
 this project is inspired by https://github.com/twtrubiks/docker-django-nginx-uwsgi-postgres-tutorial
 
 after clone this project:
